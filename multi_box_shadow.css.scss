@@ -1,0 +1,59 @@
+// Adds up to 4 box shadows, one for each side.
+// $sides:
+// top right bottom left
+// OR
+// top right-left bottom
+// OR
+// top-bottom right-left
+// OR
+// top-bottom-left-right
+//
+// $shadow-params:
+// blur spread color inset
+//
+// For browsers that don't support multiple box-shadows nothing will be rendered.
+//
+// Example:
+// @include multi-box-shadow(10px 1px 4px, 5px 6px #f00);
+// Will draw a Right and Left shadow of 1px, a Top shadow of 10px and a bottom
+// shadow of 4px with a blur of 4px, spread of 6px and red color.
+//
+@mixin multi-box-shadow($sides, $shadow-params...) {
+  @if ((length($sides) > 0) and (length($sides) <= 4)) {
+    $top:    nth($sides, 1);
+    $bottom: nth($sides, 1);
+    $left:   nth($sides, 1);
+    $right:  nth($sides, 1);
+
+    // Handle shorthand properties
+    @if length($sides) == 4 {
+      $right:  nth($sides, 2);
+      $bottom: nth($sides, 3);
+      $left:   nth($sides, 4);
+    } @else if length($sides) == 3 {
+      $left:   nth($sides, 2);
+      $right:  nth($sides, 2);
+      $bottom: nth($sides, 3);
+    } @else if length($sides) == 2 {
+      $bottom: nth($sides, 1);
+      $left:   nth($sides, 2);
+      $right:  nth($sides, 2);
+    }
+
+    $shadows: ();
+    @if $top != 0 {
+      $shadows: append($shadows, (0 (-$top) $shadow-params), comma);
+    }
+    @if $right != 0 {
+      $shadows: append($shadows, ($right 0 $shadow-params), comma);
+    }
+    @if $bottom != 0 {
+      $shadows: append($shadows, (0 $bottom $shadow-params), comma);
+    }
+    @if $left != 0 {
+      $shadows: append($shadows, ((-$left) 0 $shadow-params), comma);
+    }
+
+    @include box-shadow($shadows);
+  }
+}
